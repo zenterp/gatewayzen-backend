@@ -4,7 +4,6 @@ var EC2Client = require(__dirname+'/../lib/ec2_client');
 var ec2 = new EC2Client();
 
 function getGatewayNeedingInstance(fn) {
-
   Gateway.find({ where: { ec2_instance_id: '' }}).complete(function(err, gateway) {
     if (err) {
       fn(err, null); 
@@ -12,7 +11,6 @@ function getGatewayNeedingInstance(fn) {
       fn(null, gateway);
     }
   });
-
 };
 
 function attachInstanceToGateway(gateway, fn){
