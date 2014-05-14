@@ -1,52 +1,54 @@
-var SSH = require('ssh2');
+var Gateway = require(__dirname+'/../lib/models/gateway.js');
+var S3Client = require(__dirname+'/../lib/s3_client.js');
+var Shell = require(__dirname+'/../lib/shell.js');
 
-function Shell(host, privateKey){
-  this.host = host;
-  this.privateKey = privateKey;
-  this.databaseUrl = 'postgres://postgres:password@localhost:5432/ripple_gateway';
-  this.shell = new SSH();
-}
+var s3 = new S3Client();
 
-Shell.prototype.exec = function(command, fn){
-  var shell = this.shell;
-  var that = this;
-  shell.connect({
-    host: this.host,
-    port: 22,
-    username: 'ubuntu',
-    agentForward: true,
-    privateKey: this.privateKey,
-    readyTimeout: 20000
+function getGatewayNeedingApiKey(fn) {
+  Gateway.find({ where: ["s3_keypair_id != ''", { api_key: '' }]})
+    .complete(function(err, gateway) {
+    if (err) {
+      fn(err, null); 
+    } else {
+      fn(null, gateway);
+    }
   });
-  shell.on('error', function(err) {
-    fn(err, null);
-  });
-  shell.on('ready', function() {
-    shell.exec('DATABASE_URL='+that.databaseUrl+' '+command, function(err, stream){
-      if (err) throw err;
-      stream.on('data', function(data, extended) {
-        if (extended == 'stderr'){
-          fn(data.toString(), null);
-        } else {
-          fn(null, data.toString());
-        }
-      });
-      stream.on('exit', function(code, signal) {
-        shell.end();
+};
+
+function attachApiKeyToGateway(gateway, fn){
+  s3.getSshKey(gateway.s3_keypair_id, function(err, key){
+    if (err) { handleError(err, fn); return };
+    ssh = new Shell({
+      host: gateway.public_ip,
+      privateKey: new Buffer(key)
+    });
+    ssh.exec('/home/ubuntu/gatewayd/bin/gateway get_key', function(err, apiKey){
+      if (err) { handleError(err, fn); return };
+      gateway.api_key = apiKey;
+      gateway.save().complete(function(){
+        fn(null, apiKey);
       });
     });
   });
 }
 
-function getApiKey(host, privateKey, fn){
-  var shell = new Shell(host, privateKey);
-  shell.exec('/home/ubuntu/gatewayd/bin/gateway get_key', fn);
+function handleError(err, fn){
+  if (err) { console.log('error', err) };
+  setTimeout(function() {
+    fn(fn);
+  }, 1000);
+}
+
+function work(fn) {
+  getGatewayNeedingApiKey(function(err, gateway) {
+    if (err || !gateway) { handleError(err, fn); return; }
+    attachApiKeyToGateway(gateway, function(err, apiKey){ 
+      if (err) { handleError(err, fn); return; };
+      console.log(apiKey);
+      fn(fn);
+    });
+  });
 };
 
-var privateKey = require('fs').readFileSync('/Users/stevenzeiler/.ssh/amazon_web_services.pem');
-
-getApiKey('50.17.39.241', privateKey, function(err, apiKey){
-  if (err) { console.log('Error', err); return; };
-  console.log('API KEY', apiKey);
-});
+work(work);
 
