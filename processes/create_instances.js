@@ -1,9 +1,11 @@
-var gateways = require(__dirname+'/../lib/gateways');
+var Gateway = require(__dirname+'/../lib/models/gateway.js');
+var EC2Client = require(__dirname+'/../lib/ec2_client');
 
+var ec2 = new EC2Client();
 
-function pop(fn){
+function getGatewayNeedingInstance(fn) {
 
-  gateways.find({ where: { state: 'ec2instance' }}, function(err, gateway) {
+  Gateway.find({ where: { ec2_instance_id: '' }}).complete(function(err, gateway) {
     if (err) {
       fn(err, null); 
     } else {
@@ -13,19 +15,39 @@ function pop(fn){
 
 };
 
+function attachInstanceToGateway(gateway, fn){
+  ec2.createInstance(function(err, instance){
+    if (err) {
+      handleError(err, fn); return;
+    }
+    gateway.ec2_instance_id = instance.InstanceId;
+    gateway.state = 'confirm_instance';
+    gateway.save().complete(function(){
+      fn(null, instance);
+    });
+  }); 
+}
+
+function handleError(err, fn){
+  if (err) { console.log('error', err) };
+  setTimeout(function() {
+    fn(fn);
+  }, 1000);
+}
+
 function work(fn) {
 
-  pop(function(err, gateway) {
-    if (err) { setTimeout(function() { fn(fn); }, 500); return; };
+  getGatewayNeedingInstance(function(err, gateway) {
+    if (err || !gateway) { 
+      handleError(err, fn); return;
+    }
 
-    ec2.createInstance(function(err, instance){
-      if (err) { setTimeout(function() { fn(fn); }, 500); return; };
+    attachInstanceToGateway(gateway, function(err, instance){ 
+      if (err) { handleError(err, fn); return; };
 
-      gateway.ec2_instance_id = instance.InstanceId;
-      gateway.state = 'complete';
-      gateway.save().complete(function(){ fn(fn); });
-
-    }); 
+      console.log(instance);
+      fn(fn);
+    });
   });
 };
 
