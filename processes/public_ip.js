@@ -3,6 +3,16 @@ var EC2Client = require(__dirname+'/../lib/ec2_client.js');
 var SequelizeQueueWorker = require(__dirname'/../lib/poller.js');
 var ec2 = new EC2Client();
 
+var worker = new SequelizeQueueWorker({ 
+  Class: Gateway, 
+  predicate: {
+    where: { state: 'public_ip' }
+  },
+  job: attachPublicIp
+});
+
+worker.start();
+
 function attachPublicIp(gateway, callback){
   ec2.describeInstance(gateway.ec2_instance_id, function(err, instance){
     if (err) { callback(err); return };
@@ -15,18 +25,4 @@ function attachPublicIp(gateway, callback){
     }
   }); 
 }
-
-
-var worker = new SequelizeQueueWorker({ 
-  Class: Gateway, 
-  predicate: {
-    where: { state: 'public_ip' }
-  },
-  job: attachPublicIp
-});
-
-worker.start();
-
-
-work(work);
 

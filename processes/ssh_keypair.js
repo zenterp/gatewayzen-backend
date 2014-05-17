@@ -6,15 +6,15 @@ var SequelizeQueueWorker = require(__dirname+'/../lib/sequelize_queue_worker.js'
 var ec2 = new EC2Client();
 var s3 = new S3Client();
 
-function createKeyPair(fn){
-  ec2.createKeypair(function(err, keypair){
-    if (err) { console.log('error', err); fn(err,null); return; }
-    s3.putSshKey(keypair, function(err, s3Object){
-      if (err) { console.log('error', err); fn(err,null); return; }
-      fn(null, keypair);
-    });
-  }); 
-}
+var worker = new SequelizeQueueWorker({ 
+  Class: Gateway, 
+  predicate: {
+    where: { state: 'ssh_keypair' }
+  },
+  job: attachKeypairToGateway
+});
+
+worker.start();
 
 function attachKeypairToGateway(gateway, callback){
   createKeypair(function(err, keypair){
@@ -25,13 +25,13 @@ function attachKeypairToGateway(gateway, callback){
   });
 }
 
-var worker = new SequelizeQueueWorker({ 
-  Class: Gateway, 
-  predicate: {
-    where: { state: 'ssh_keypair' }
-  },
-  job: attachKeypairToGateway
-});
-
-worker.start();
+function createKeyPair(fn){
+  ec2.createKeypair(function(err, keypair){
+    if (err) { console.log('error', err); fn(err,null); return; }
+    s3.putSshKey(keypair, function(err, s3Object){
+      if (err) { console.log('error', err); fn(err,null); return; }
+      fn(null, keypair);
+    });
+  }); 
+}
 
