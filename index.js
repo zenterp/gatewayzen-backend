@@ -1,9 +1,10 @@
 var forever = require('forever-monitor');
 
 var processNames = [
-  'create_instances',
-  'confirm_instances',
-  'get_api_key'
+  'instance',
+  'public_ip',
+  'ssh_keypair',
+  'api_key'
 ];
 
 processNames.forEach(function(name) {

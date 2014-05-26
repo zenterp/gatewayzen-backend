@@ -1,6 +1,7 @@
 var Gateway = require(__dirname+'/../lib/models/gateway.js');
 var S3Client = require(__dirname+'/../lib/s3_client.js');
 var Shell = require(__dirname+'/../lib/shell.js');
+var SequelizeQueueWorker = require(__dirname+'/../lib/sequelize_queue_worker.js');
 
 var s3 = new S3Client();
 

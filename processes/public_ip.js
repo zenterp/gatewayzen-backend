@@ -1,6 +1,6 @@
 var Gateway = require(__dirname+'/../lib/models/gateway.js');
 var EC2Client = require(__dirname+'/../lib/ec2_client.js');
-var SequelizeQueueWorker = require(__dirname'/../lib/poller.js');
+var SequelizeQueueWorker = require(__dirname+'/../lib/sequelize_queue_poller.js');
 var ec2 = new EC2Client();
 
 var worker = new SequelizeQueueWorker({ 

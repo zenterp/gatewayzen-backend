@@ -9,13 +9,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "sequelize": "^1.7.2",
-    "pg": "^3.0.3",
-    "express": "^4.0.0",
     "aws-sdk": "^2.0.0-rc13",
-    "validator": "^3.10.0",
+    "express": "^4.0.0",
     "forever-monitor": "^1.2.3",
+    "node-resque": "^0.7.0",
+    "pg": "^3.0.3",
+    "request": "^2.36.0",
+    "ripple-lib": "^0.7.36",
+    "ripple-wallet": "^2.0.0",
+    "sequelize": "^1.7.2",
     "ssh2": "^0.2.23",
-    "uuid": "^1.4.1"
+    "superagent": "^0.18.0",
+    "uuid": "^1.4.1",
+    "validator": "^3.10.0"
   }
 }
