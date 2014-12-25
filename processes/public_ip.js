@@ -1,9 +1,9 @@
 var Gateway = require(__dirname+'/../lib/models/gateway.js');
 var EC2Client = require(__dirname+'/../lib/ec2_client.js');
-var SequelizeQueueWorker = require(__dirname+'/../lib/sequelize_queue_poller.js');
+var Worker = require('sql-mq-worker');
 var ec2 = new EC2Client();
 
-var worker = new SequelizeQueueWorker({ 
+var worker = new Worker({
   Class: Gateway, 
   predicate: {
     where: { state: 'public_ip' }

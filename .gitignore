@@ -1,4 +1,4 @@
-config/
+config/aws.json
 node_modules/
 *.swo
 *.swp

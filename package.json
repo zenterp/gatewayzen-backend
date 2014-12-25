@@ -18,6 +18,7 @@
     "ripple-lib": "^0.7.36",
     "ripple-wallet": "^2.0.0",
     "sequelize": "^1.7.2",
+    "sql-mq-worker": "^1.0.3",
     "ssh2": "^0.2.23",
     "superagent": "^0.18.0",
     "uuid": "^1.4.1",
