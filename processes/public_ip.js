@@ -1,10 +1,10 @@
-var Gateway = require(__dirname+'/../lib/models/gateway.js');
+var Gatewayd = require(__dirname+'/../lib/models/gatewayd.js');
 var EC2Client = require(__dirname+'/../lib/ec2_client.js');
 var Worker = require('sql-mq-worker');
 var ec2 = new EC2Client();
 
-var worker = new Worker({
-  Class: Gateway, 
+var worker = new Worker({ 
+  Class: Gatewayd, 
   predicate: {
     where: { state: 'public_ip' }
   },

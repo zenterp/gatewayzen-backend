@@ -1,20 +1,21 @@
-var Gateway = require(__dirname+'/../lib/models/gateway.js');
+var Gatewayd = require(__dirname+'/../lib/models/gatewayd.js');
 var EC2Client = require(__dirname+'/../lib/ec2_client');
 var Worker = require('sql-mq-worker');
 
 var ec2 = new EC2Client();
 
-var worker = new Worker({
-  Class: Gateway, 
+var worker = new Worker({ 
+  Class: Gatewayd, 
   predicate: {
     where: { state: 'instance' }
   },
-  job: attachInstanceToGateway
+  job: attachInstanceToGatewayd
 });
 
 worker.start();
 
-function attachInstanceToGateway(gateway, callback){
+function attachInstanceToGatewayd(gateway, callback){
+  console.log('ATTACH INSTANCE', gateway.toJSON());
   ec2.createInstance(function(err, instance){
     if (err) { callback(err); return };
     gateway.ec2_instance_id = instance.InstanceId;

@@ -1,4 +1,4 @@
-var Gateway = require(__dirname+'/../lib/models/gateway.js');
+var Gatewayd = require(__dirname+'/../lib/models/gatewayd.js');
 var EC2Client = require(__dirname+'/../lib/ec2_client.js');
 var S3Client = require(__dirname+'/../lib/s3_client.js');
 var Worker = require('sql-mq-worker');
@@ -6,17 +6,17 @@ var Worker = require('sql-mq-worker');
 var ec2 = new EC2Client();
 var s3 = new S3Client();
 
-var worker = new Worker({
-  Class: Gateway, 
+var worker = new Worker({ 
+  Class: Gatewayd, 
   predicate: {
     where: { state: 'ssh_keypair' }
   },
-  job: attachKeypairToGateway
+  job: attachKeypairToGatewayd
 });
 
 worker.start();
 
-function attachKeypairToGateway(gateway, callback){
+function attachKeypairToGatewayd(gateway, callback){
   createKeypair(function(err, keypair){
     if (err){ callback(err); return; };
     gateway.ec2_keypair_id = keypair.KeyName;
