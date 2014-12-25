@@ -1,4 +1,5 @@
 config/aws.json
+config/database.json
 node_modules/
 *.swo
 *.swp
