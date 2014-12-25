@@ -10,7 +10,7 @@ exports.up = function(db, callback) {
       autoIncrement: true
     },
     state:  {
-      type: 'string'
+      type: 'string',
       notNull: true
     },
     name: {
