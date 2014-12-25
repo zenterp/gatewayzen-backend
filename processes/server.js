@@ -1,5 +1,5 @@
-var app = require(__dirname+'/lib/application');
-var Gatewayd = require(__dirname+'/lib/models/gatewayd');
+var app = require(__dirname+'/../lib/application');
+var Gatewayd = require(__dirname+'/../lib/models/gatewayd');
 
 var port = process.env.PORT || 5000;
 
