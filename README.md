@@ -4,6 +4,16 @@ Purpose: To automatically build and maintain a fleet of gatewayd servers using
 a simple state machine. That can be triggered by an external application through
 postgres.
 
+## Redis ResQueue Workers
+
+GatewayZen reacts to messages send through the Resque protocol, processing the
+messages as jobs with horizontally scalable worker processes:
+
+    new ResqueWorker({
+      queues: ['initializeEc2Instance']
+    })
+    .start();
+
 ## States
 
 - New

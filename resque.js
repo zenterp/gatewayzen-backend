@@ -1,5 +1,6 @@
 var NR = require("node-resque");
-var ResqueWorker = require(__dirname+'/../');
+var ResqueWorker = require(__dirname+'/lib/resque_worker');
+var jobs 	       = require('require-all-to-camel')(__dirname+'/lib/jobs');
 
 var connectionDetails = {
   host:      "127.0.0.1",
@@ -8,29 +9,16 @@ var connectionDetails = {
   database:  0,
 }
 
-var jobs = {
-  "setColdWallet": require(__dirname+'/lib/jobs/set_cold_wallet.js'),
-  "fundColdWallet": require(__dirname+'/lib/jobs/fund_cold_wallet.js')
-};
-
-var scheduler = new NR.scheduler({connection: connectionDetails}, function(){
-  scheduler.start();
-});
 var worker = new ResqueWorker({
-  queues: ['gateway']
+  queues: ['initializeEc2Instance']
 });
 
 worker.start();
 
-scheduler.on('start',             function(){ console.log("scheduler started"); })
-scheduler.on('end',               function(){ console.log("scheduler ended"); })
-scheduler.on('error',             function(error){ console.log("scheduler error >> " + error); })
-scheduler.on('poll',              function(){ console.log("scheduler polling"); })
-scheduler.on('working_timestamp', function(timestamp){ console.log("scheduler working timestamp " + timestamp); })
-scheduler.on('transferred_job',    function(timestamp, job){ console.log("scheduler enquing job " + timestamp + " >> " + JSON.stringify(job)); })
+console.log(jobs);
 
 var queue = new NR.queue({connection: connectionDetails}, jobs, function(){
-	queue.enqueue('gateway', 'setColdWallet', [2]);
-  queue.enqueue('gateway', 'fundColdWallet', [2]);
+	queue.enqueue('initializeEc2Instance', 'initializeEc2Instance', 1);
+	queue.enqueue('initializeEc2Instance', 'initializeEc2Instance', 2);
 });
 
