@@ -1,7 +1,7 @@
-var Gateway = require(__dirname+'/../models/gatewayd.js');
+var Gateway = require(__dirname+'/../lib/models/gatewayd.js');
 var request = require('request');
 var rippleLib = require('ripple-lib');
-var rippleD = require(__dirname+'/../remote.js');
+var rippleD = require(__dirname+'/../lib/remote.js');
 var rippleWallet = require('ripple-wallet');
 
 /*

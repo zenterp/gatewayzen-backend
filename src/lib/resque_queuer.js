@@ -1,6 +1,6 @@
 var NR      = require('node-resque');
 var Promise = require('bluebird');
-var jobs    = require('require-all-to-camel')(__dirname+'/jobs');
+var jobs    = require('require-all-to-camel')(__dirname+'/../jobs');
 
 function ResqueQueuer(options) {
   this.connectionDetails = {

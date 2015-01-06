@@ -1,7 +1,7 @@
-var Gatewayd = require(__dirname+'/../models/gatewayd.js');
+var Gatewayd = require(__dirname+'/../lib/models/gatewayd.js');
 var request = require('request');
 var rippleWallet = require('ripple-wallet');
-var rippleClient = require(__dirname+'/../ripple_client.js');
+var rippleClient = require(__dirname+'/../lib/ripple_client.js');
 
 /*
 * @function setColdWallet

@@ -2,16 +2,16 @@
   "name": "gateway-zen",
   "version": "1.0.0",
   "description": "Gateway Software as a Service",
-  "main": "index.js",
+  "main": "src/bridges.js",
   "scripts": {
-    "start": "node ./",
+    "start": "node src/bridges.js",
     "test": "mocha -R test/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.0.0-rc13",
-    "bluebird": "^2.5.2",
+    "bluebird": "^2.6.0",
     "body-parser": "^1.10.0",
     "bridges-application": "^0.2.1",
     "db-migrate": "^0.8.0",

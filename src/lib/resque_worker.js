@@ -1,6 +1,6 @@
 var NR   = require("node-resque");
 var path = require('path');
-var jobs = require('require-all-to-camel')(path.join(__dirname+'/jobs'));
+var jobs = require('require-all-to-camel')(path.join(__dirname+'/../jobs'));
 
 function ResqueWorker(options) {
   if (!options.queues instanceof Array) {
