@@ -1,23 +1,13 @@
-var forever = require('forever-monitor');
+var path               = require('path')
+var BridgesApplication = require('bridges-application')
+var fs                 = require('fs')
 
-var processNames = [
-  'instance',
-  'server'
-];
+var application = new BridgesApplication({
+  directory : __dirname
+})
 
-processNames.forEach(function(name) {
+application.supervisor.start().then(function() {
 
-  var child = new (forever.Monitor)(__dirname+'/processes/'+name+'.js', {
-    max: 100,
-    silent: false,
-    options: []
-  });
-
-  child.on('exit', function () {
-    console.log(name + ' process has exited after 100 restarts');
-  });
-
-  child.start();
-});
-
+  console.log('started bridges application supervisor')
+})
 

@@ -1,28 +1,24 @@
-var Gatewayd = require(__dirname+'/../lib/models/gatewayd.js');
-var EC2Client = require(__dirname+'/../lib/ec2_client');
-var Worker = require('sql-mq-worker');
+var NR           = require("node-resque")
+var path         = require('path')
+var ResqueWorker = require(path.join(__dirname, '/../lib/resque_worker'))
+var ResqueQueuer = require(path.join(__dirname, '/../lib/resque_queuer'))
+var requireAll   = require('require-all-to-camel')
+var jobs 	       = requireAll(path.join(__dirname, '/../lib/jobs'))
 
-var ec2 = new EC2Client();
+module.exports = function() {
 
-var worker = new Worker({ 
-  Class: Gatewayd, 
-  predicate: {
-    where: { state: 'instance' }
-  },
-  job: attachInstanceToGatewayd
-});
+  var worker = new ResqueWorker({
+    queues: ['gatewayzen']
+  })
 
-worker.start();
+  worker.start()
 
-function attachInstanceToGatewayd(gateway, callback){
-  console.log('ATTACH INSTANCE', gateway.toJSON());
-  ec2.createInstance(function(err, instance){
-    if (err) { callback(err); return };
-    gateway.ec2_instance_id = instance.InstanceId;
-    gateway.state = 'confirm_instance';
-    gateway.save().complete(function(){
-      callback(null, instance);
-    });
-  }); 
+  var queuer = new ResqueQueuer()
+
+  queuer.start().then(function(queue) {
+    queue.enqueue('gatewayzen', 'initializeEc2Instance', [1])
+    queue.enqueue('gatewayzen', 'initializeEc2Instance', [2])
+    queue.enqueue('gatewayzen', 'initializeEc2Instance', [3])
+  })
 }
 
